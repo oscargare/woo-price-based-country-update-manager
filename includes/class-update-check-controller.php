@@ -36,7 +36,7 @@ class Update_Check_Controller {
 	 * Flush cache.
 	 */
 	public static function flush_cache() {
-		delete_site_option( __CLASS__ );
+		delete_site_transient( __CLASS__ );
 	}
 
 	/**
@@ -50,7 +50,7 @@ class Update_Check_Controller {
 	 * Init cache.
 	 */
 	private static function init_cache() {
-		self::$cache = get_site_option( __CLASS__, [] );
+		self::$cache = get_site_transient( __CLASS__, [] );
 		if ( ! is_array( self::$cache ) || ! isset( self::$cache['data'], self::$cache['timeout'] ) || time() > self::$cache['timeout'] ) {
 			self::$cache = [];
 		}
@@ -64,7 +64,7 @@ class Update_Check_Controller {
 			unset( self::$cache['dirty'] );
 			self::$cache['timeout'] = strtotime( '+10 hours', time() );
 
-			update_site_option( __CLASS__, self::$cache );
+			set_site_transient( __CLASS__, self::$cache, DAY_IN_SECONDS );
 		}
 	}
 
