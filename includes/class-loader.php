@@ -71,6 +71,10 @@ final class Loader {
 			}
 			require_once $file;
 		}
+
+		if ( ! function_exists( 'wc' ) ) {
+			include_once dirname( __FILE__ ) . '/required-functions.php';
+		}
 	}
 
 	/**
@@ -79,6 +83,7 @@ final class Loader {
 	protected function get_files() {
 		return [
 			'WC_Settings_API'        => $this->wc_plugin_path() . '/includes/abstracts/abstract-wc-settings-api.php',
+			'WC_Log_Levels'          => $this->wc_plugin_path() . '/includes/class-wc-log-levels.php',
 			'WCPBC_Helper_Options'   => $this->wcpbc_path() . '/includes/class-wcpbc-helper-options.php',
 			'WCPBC_Debug_Logger'     => $this->wcpbc_path() . '/includes/class-wcpbc-debug-logger.php',
 			'WCPBC_License_Settings' => dirname( WCPBC_PRO_PLUGIN_FILE ) . '/includes/admin/class-wcpbc-license-settings.php',
