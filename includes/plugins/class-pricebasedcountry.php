@@ -45,6 +45,9 @@ class Pricebasedcountry extends Plugin {
 			$this->get_version()
 		);
 
+		if ( is_object( $response ) && isset( $response->package, $response->new_version ) && \version_compare( $this->get_version(), $response->new_version, '<' ) ) {
+			$response->package = add_query_arg( 'token', $license->get_token(), $response->package );
+		}
 		return $response;
 	}
 
