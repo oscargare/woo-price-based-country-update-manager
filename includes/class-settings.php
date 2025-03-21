@@ -35,7 +35,7 @@ final class Settings {
 	 * @return void
 	 */
 	public static function init() {
-		if ( null === static::$instance ) {
+		if ( null === static::$instance && is_main_site() && ! is_network_admin() ) {
 			static::$instance = new static();
 		}
 	}
