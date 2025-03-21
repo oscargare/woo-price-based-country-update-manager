@@ -9,11 +9,12 @@
 namespace WCPBC_Update_Manager;
 
 use WCPBC_Update_Manager\Plugins\Pricebasedcountry;
+use WCPBC_Update_Manager\Plugins\My_Self;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * WCPBC_Blocks_Controller class.
+ * Update_Check_Controller class.
  */
 class Update_Check_Controller {
 
@@ -29,6 +30,7 @@ class Update_Check_Controller {
 	 */
 	public static function init() {
 		add_filter( 'pre_set_site_transient_update_plugins', [ __CLASS__, 'update_plugins' ], 25 );
+		add_filter( 'plugins_api', [ __CLASS__, 'plugin_information' ], 25, 3 );
 		add_action( 'wcpbc_update_manager_license_save', [ __CLASS__, 'flush_cache' ] );
 	}
 
@@ -43,7 +45,10 @@ class Update_Check_Controller {
 	 * Returns the plugins.
 	 */
 	private static function get_plugins() {
-		return [ new Pricebasedcountry() ];
+		return [
+			new Pricebasedcountry(),
+			new My_Self(),
+		];
 	}
 
 	/**
@@ -51,6 +56,7 @@ class Update_Check_Controller {
 	 */
 	private static function init_cache() {
 		self::$cache = get_site_transient( __CLASS__, [] );
+
 		if ( ! is_array( self::$cache ) || ! isset( self::$cache['data'], self::$cache['timeout'] ) || time() > self::$cache['timeout'] ) {
 			self::$cache = [];
 		}
@@ -145,5 +151,40 @@ class Update_Check_Controller {
 		self::update_cache();
 
 		return $transient;
+	}
+
+	/**
+	 * Updates information on the "View version x.x details" page with custom data.
+	 *
+	 * @param mixed  $result The result object or array. Default false.
+	 * @param string $action The type of information being requested from the Plugin Installation API.
+	 * @param object $args Plugin API arguments.
+	 * @return object
+	 */
+	public static function plugin_information( $result, $action, $args ) {
+		if ( 'plugin_information' !== $action || ! isset( $args->slug ) ) {
+			return $result;
+		}
+
+		foreach ( self::get_plugins() as $plugin ) {
+			if ( $args->slug !== $plugin->get_slug() ) {
+				continue;
+			}
+
+			$plugin->information();
+
+			$result = (object) [
+				'name'         => $plugin->get_title(),
+				'slug'         => $plugin->get_slug(),
+				'author'       => $plugin->get_author(),
+				'tested'       => $plugin->get_tested(),
+				'version'      => $plugin->get_new_version(),
+				'homepage'     => $plugin->get_homepage(),
+				'sections'     => $plugin->get_sections(),
+				'last_updated' => $plugin->get_last_updated(),
+			];
+		}
+
+		return $result;
 	}
 }

@@ -47,4 +47,33 @@ class Pricebasedcountry extends Plugin {
 
 		return $response;
 	}
+
+	/**
+	 * Returns the plugin information.
+	 *
+	 * @return object
+	 */
+	protected function information_request() {
+		$license = new License();
+
+		if ( ! $license->get_is_valid() ) {
+			return false;
+		}
+
+		$response = \WC_Plugin_API_Wrapper::plugin_information(
+			1450,
+			$license->get_token(),
+			$license->get_key()
+		);
+
+		if ( ! ( is_object( $response ) && isset( $response->version, $response->sections ) ) ) {
+			return false;
+		}
+
+		return (object) [
+			'new_version'  => $response->version,
+			'last_updated' => $response->last_updated,
+			'sections'     => (array) $response->sections,
+		];
+	}
 }
