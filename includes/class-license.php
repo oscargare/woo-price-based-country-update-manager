@@ -67,7 +67,7 @@ final class License {
 		$props['expired']      = 'active' !== $license['status'];
 		$props['expiring']     = 'yes' === $license['renewal_period'];
 		$props['is_connected'] = ! empty( $props['key'] ) && false === $props['expired'] && $this->license_settings->is_license_active();
-		$props['expires']      = empty( $license['expires'] ) ? '' : date_i18n( wc_date_format(), strtotime( $license['expires'] ) );
+		$props['expires']      = empty( $license['expires'] ) ? '' : date_i18n( get_option( 'date_format' ), strtotime( $license['expires'] ) );
 		$props['is_valid']     = $props['is_connected'] && $this->license_settings->is_valid_key();
 
 		$this->set_properties( $props );
