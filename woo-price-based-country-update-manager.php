@@ -3,8 +3,8 @@
  * Plugin Name:  WooCommerce Price Based on Country Pro -  Update Manager
  * Plugin URI: https://www.pricebasedcountry.com/
  * Description:  Receive updates from Pricebasedcountry.com
- * Version: 0.1.0
- * Author: Oscar Gare
+ * Version: 1.0.0
+ * Author: Pricebasedcountry.com
  * Author URI: https://www.pricebasedcountry.com/
  * Domain Path: /languages/
  * Text Domain: woo-price-based-country-update-manager
@@ -35,8 +35,11 @@ if ( ! defined( 'WCPBC_UPDATE_MANAGER_PLUGIN_FILE' ) ) {
 	register_activation_hook(
 		__FILE__,
 		function() {
-			if ( ! is_network_admin() ) {
-				wp_die( 'Install this plugin only in the network admin!' );
+			if ( ! is_multisite() ) {
+				wp_die( 'Activate this plugin only in multisite!' );
+			}
+			if ( ! is_main_site() ) {
+				wp_die( 'Activate this plugin only in the main network site!' );
 			}
 		}
 	);

@@ -4,5 +4,5 @@ Receive plugin updates from Pricebasedcountry.com on a multisite network.
 
 ## Requeriments
 
-PHP 7.4
-WordPress 3.8
++ PHP 7.0
++ WordPress 3.8
